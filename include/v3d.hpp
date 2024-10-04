@@ -2,6 +2,7 @@
 #ifdef _MSC_VER
 #define NOMINMAX
 #endif
+#include<ege.h>
 #include<algorithm>
 #include<array>
 #include<cfloat>
@@ -10,7 +11,7 @@
 #include<memory>
 #include<vector>
 namespace v3d{
-    using color_t=unsigned int;
+    using color_t=ege::color_t;
     class vector{
     public:
         double x,y,z;
@@ -49,7 +50,8 @@ namespace v3d{
             color_t color;
             double dist;
         };
-        virtual std::shared_ptr<pickpoint_t> pick(const vector &pos,const vector &ray,const int &rtd)const{return nullptr;}
+        static constexpr pickpoint_t pickpoint_null{{},0u,0};
+        virtual pickpoint_t pick(const vector &pos,const vector &ray,const int &rtd)const=0;
     };
     class renderer:public std::list<const renderable*>{
     public:
@@ -65,41 +67,53 @@ namespace v3d{
             using pdc=std::pair<double,color_t>;
             std::vector<pdc> px;
             for(const auto &fp:*this)
-                if(const auto t=fp->pick(pos,ray,rtd);t.get()!=nullptr) px.emplace_back(t->dist,t->color);
+                if(const auto [normal,color,dist]=fp->pick(pos,ray,rtd);dist) px.emplace_back(dist,color);
             if(px.empty()) return bgcolor;
-            int mi=1;
-            for(int i=2;i<px.size();++i)
+            int mi=0;
+            for(int i=1;i<px.size();++i)
                 if(px[i].first<px[mi].first) mi=i;
             return px[mi].second;
         }
-        color_t render(const int &x,const int &y,const int &rtd)const{
+        color_t render_ssaa(const int &x,const int &y,const int &rtd)const{
             unsigned int r=0u,g=0u,b=0u;
             const int hh=height>>1,hw=width>>1;
             for(int i=0;i<SSAA_SIZE;++i)
                 for(int j=0;j<SSAA_SIZE;++j){
                     const auto c=render(facing+ud*(hh-y+SSAA_OFFSET[i])+rd*(x-hw+SSAA_OFFSET[j]),rtd);
-                    r+=c>>16&0xff,g+=c>>8&0xff,b+=c&0xff;
+                    r+=EGEGET_R(c),g+=EGEGET_G(c),b+=EGEGET_B(c);
                 }
-            return r/SSAA_COUNT<<16|g/SSAA_COUNT<<8|r/SSAA_COUNT;
+            return EGERGB(r/SSAA_COUNT,g/SSAA_COUNT,b/SSAA_COUNT);
+        }
+        color_t render(const int &x,const int &y,const int &rtd)const{
+            using pdc=std::pair<double,color_t>;
+            const int hh=height>>1,hw=width>>1;
+            std::vector<pdc> px;
+            for(const auto &fp:*this)
+                if(const auto [normal,color,dist]=fp->pick(pos,facing+ud*(hh-y)+rd*(x-hw),rtd);dist) px.emplace_back(dist,color);
+            if(px.empty()) return bgcolor;
+            int mi=0;
+            for(int i=1;i<px.size();++i)
+                if(px[i].first<px[mi].first) mi=i;
+            return px[mi].second;
         }
     };
     class triface:public collection<vector,std::array<vector,3>>,public renderable{
     public:
         color_t color;
         triface():color(){}
-        triface(const vector &v1,const vector &v2,const vector &v3,const color_t &):collection({v1,v2,v3}),color(color){}
-        virtual std::shared_ptr<pickpoint_t> pick(const vector&pos,const vector&ray,const int&rtd)const override{
+        triface(const vector &v1,const vector &v2,const vector &v3,const color_t &color):collection({v1,v2,v3}),color(color){}
+        virtual pickpoint_t pick(const vector &pos,const vector &ray,const int &rtd)const override{
             const auto e1=at(1)-at(0),e2=at(2)-at(0),pv=ray&e2;
             double det=e1*pv;
-            if(fabs(det)<DBL_EPSILON) return nullptr;
+            if(fabs(det)<DBL_EPSILON) return pickpoint_null;
             det=1/det;
             const auto tvec=pos-at(0);
             const double u=tvec*pv*det;
-            if(u<0||u>1) return nullptr;
+            if(u<0||u>1) return pickpoint_null;
             const auto qv=tvec&e1;
-            if(const double v=ray*qv*det;v<0||u+v>1) return nullptr;
-            if(const double t=e2*qv*det;t>0) return std::shared_ptr<pickpoint_t>{new pickpoint_t{e1&e2,color,t}};
-            return nullptr;
+            if(const double v=ray*qv*det;v<0||u+v>1) return pickpoint_null;
+            if(const double t=e2*qv*det;t>0) return {{},color,t};
+            return pickpoint_null;
         }
     };
     class rect:public collection<triface,std::array<triface,12>>{

@@ -17,7 +17,7 @@ int main(){
     for(int i=0;i<HEIGHT;++i)
         for(int j=0;j<WIDTH;++j){
             const auto color=renderer.render(j,i,0);
-            image<<(color>>16&0xff)<<' '<<(color>>8&0xff)<<' '<<(color&0xff)<<' ';
+            image<<EGEGET_R(color)<<' '<<EGEGET_G(color)<<' '<<EGEGET_B(color)<<' ';
         }
     image.close();
     return 0;
