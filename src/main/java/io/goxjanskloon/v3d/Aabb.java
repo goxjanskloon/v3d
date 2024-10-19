@@ -1,0 +1,43 @@
+package io.goxjanskloon.v3d;
+import java.util.*;
+public class Aabb{
+    public static final Aabb empty=new Aabb(Interval.empty,Interval.empty,Interval.empty);
+    public final Interval x,y,z;
+    public Aabb(Interval x,Interval y,Interval z){
+        this.x=x;
+        this.y=y;
+        this.z=z;
+    }
+    public Interval get(Dimension d){
+        return switch(d){
+            case X->
+                    x;
+            case Y->
+                    y;
+            case Z->
+                    z;
+        };
+    }
+    public Dimension getLongestAxis(){
+        final double xl=x.length(),yl=y.length(),zl=z.length();
+        if(xl>yl&&xl>zl)
+            return Dimension.X;
+        if(yl>xl&&yl>zl)
+            return Dimension.Y;
+        return Dimension.Z;
+    }
+    public boolean hit(Ray ray,Interval interval){
+        for(int i=0;i<=2;++i){
+            final Dimension d=Dimension.valueOf(i);
+            if((interval=interval.intersect(new Interval((get(d).min-ray.orig.get(d))/ray.dir.get(d),(get(d).max-ray.orig.get(d))/ray.dir.get(d)))).isEmpty())
+                return false;
+        }
+        return true;
+    }
+    public Aabb unite(Aabb other){
+        return new Aabb(x.unite(other.x),y.unite(other.y),z.unite(other.z));
+    }
+    public int compareTo(Aabb other,Dimension d){
+        return Double.compare(get(d).min,other.get(d).min);
+    }
+}
