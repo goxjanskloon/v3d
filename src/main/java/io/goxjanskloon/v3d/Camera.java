@@ -14,8 +14,8 @@ public class Camera{
     }
     public void setUpAngle(double upAngle){
         this.upAngle=upAngle;
-        upDir=ray.dir.cross(Y_POSITIVE).unit().rotate(ray.dir,upAngle);
-        rightDir=upDir.rotate(ray.dir,Math.PI/2.0);
+        upDir=ray.dir.cross(Y_POSITIVE).unit().rotate(ray.dir.unit(),upAngle);
+        rightDir=upDir.rotate(ray.dir.unit(),-Math.PI/2.0);
     }
     public int getWidth(){
         return width;
@@ -43,7 +43,10 @@ public class Camera{
         if(depth>maxDepth) return bgColor;
         Hittable.HitRecord record=world.hit(ray,HIT_RANGE);
         if(record==null) return bgColor;
-        return render(new Ray(record.point,((ray.dir.sub(record.normal.mul(ray.dir.dot(record.normal)*2.0))).unit().mul(2.0).add(Vector.randomUnit().mul(record.roughness))).unit()),depth+1).scale(ray.dir.neg().dot(record.normal)).scale(record.color).mix(record.color.scale(record.brightness));
+        Vector reflectDir=ray.dir.sub(record.normal.mul(ray.dir.dot(record.normal)*2.0)).unit();
+        Vector reflectDirWithRoughness=/*reflectDir.add(*/Vector.randomUnitOnHemisphere(record.normal)/*.mul(record.roughness)).unit()*/;
+        Color reflectColor=render(new Ray(record.point,reflectDirWithRoughness),depth+1).scale(ray.dir.neg().dot(record.normal));
+        return reflectColor.scale(record.color).mix(record.color.scale(record.brightness));
     }
     public Color render(int x,int y){
         Color s=Color.BLACK;
@@ -54,7 +57,7 @@ public class Camera{
     public Image render(){
         Image image=new Image(new Rgb[height][width]);
         for(int i=0;i<height;++i)
-            for(int j=0;j<width;++j) image.pixels[i][j]=render(i,j).toRgb();
+            for(int j=0;j<width;++j) image.pixels[i][j]=render(j,i).toRgb();
         return image;
     }
 }

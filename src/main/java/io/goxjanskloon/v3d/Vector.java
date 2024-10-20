@@ -57,9 +57,23 @@ public class Vector{
     }
     public Vector rotate(Vector axis,double angle){
         final double cos=Math.cos(angle);
-        return mul(cos).add(axis.mul(1.0-cos).mul(dot(axis))).add(cross(axis).mul(Math.sin(angle)));
+        return mul(cos).add(axis.mul(1.0-cos).mul(dot(axis))).add(axis.cross(this).mul(Math.sin(angle)));
+    }
+    public static Vector random(){
+        return new Vector(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5);
     }
     public static Vector randomUnit(){
-        return new Vector(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).unit();
+        while(true){
+            Vector v=random();
+            final double l=v.normSq();
+            if(1e-144<l&&l<=1)
+                return v.div(Math.sqrt(l));
+        }
+    }
+    public static Vector randomUnitOnHemisphere(Vector normal){
+        Vector v=randomUnit();
+        if(v.dot(normal)>0.0)
+            return v;
+        return v.neg();
     }
 }

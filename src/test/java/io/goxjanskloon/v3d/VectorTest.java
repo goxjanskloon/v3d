@@ -58,12 +58,11 @@ class VectorTest{
         assertTrue(b.norm()<1e-5);
     }
     @Test void rotate(){
-        Vector a=new Vector(1.3,-2.4,0.7),b=new Vector(2.6,-3.6,-6.2).unit(),c=a.rotate(b,0.3),d=c.sub(new Vector(1.93152679,-1.93118675,0.69261967));
+        Vector a=new Vector(1.3,-2.4,0.7),b=new Vector(2.6,-3.6,-6.2).unit(),c=a.rotate(b,-0.3),d=c.sub(new Vector(1.93152679,-1.93118675,0.69261967));
         assertTrue(d.norm()<1e-5);
     }
     @Test void rotateWithOrigin(){
-
-    }
-    @Test void randomUnit(){
+        Vector a=new Vector(1.3,-2.4,0.7),b=new Vector(2.6,-3.6,-6.2),f=new Vector(-6.3,1.3,6.5).unit(),c=a.rotate(new Ray(b,f),0.3),d=c.sub(new Vector(1.21216503,-1.28401213,0.39167007));
+        assertTrue(d.norm()<1e-5);
     }
 }

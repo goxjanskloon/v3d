@@ -18,7 +18,7 @@ public class Color{
         return new Color(red*scale,green*scale,blue*scale);
     }
     public Color gamma(){
-        return new Color(Math.sqrt(red),Math.sqrt(green),Math.sqrt(blue));
+        return new Color(red<0.0?0.0:Math.sqrt(red),green<0.0?0.0:Math.sqrt(green),blue<0.0?0.0:Math.sqrt(blue));
     }
     public Rgb toRgb(){
         Color c=gamma();
