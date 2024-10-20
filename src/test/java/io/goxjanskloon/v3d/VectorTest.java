@@ -29,7 +29,7 @@ class VectorTest{
         Vector a=new Vector(1.3,-2.4,0.7),b=new Vector(2.6,-3.6,-6.2),c=a.mul(b);
         assertTrue(c.sub(new Vector(3.38,8.64,-4.34)).norm()<1e-5);
     }
-    @Test void testMul(){
+    @Test void mulNumber(){
         Vector a=new Vector(1.3,-2.4,0.7),c=a.mul(1.7);
         assertTrue(c.sub(new Vector(2.21,-4.08,1.19)).norm()<1e-5);
     }
@@ -37,7 +37,7 @@ class VectorTest{
         Vector a=new Vector(1.3,-2.4,0.7),b=new Vector(2.6,-3.6,-6.2),c=a.div(b);
         assertTrue(c.sub(new Vector(0.5,0.6666666666667,-0.1129032258064516)).norm()<1e-5);
     }
-    @Test void testDiv(){
+    @Test void divNumber(){
         Vector a=new Vector(1.3,-2.4,0.7),c=a.div(1.7);
         assertTrue(c.sub(new Vector(0.7647058823529412,-1.411764705882353,0.4117647058823529)).norm()<1e-5);
     }
@@ -61,7 +61,7 @@ class VectorTest{
         Vector a=new Vector(1.3,-2.4,0.7),b=new Vector(2.6,-3.6,-6.2).unit(),c=a.rotate(b,0.3),d=c.sub(new Vector(1.93152679,-1.93118675,0.69261967));
         assertTrue(d.norm()<1e-5);
     }
-    @Test void testRotate(){
+    @Test void rotateWithOrigin(){
 
     }
     @Test void randomUnit(){
