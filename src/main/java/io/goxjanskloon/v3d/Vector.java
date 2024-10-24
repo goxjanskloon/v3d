@@ -1,4 +1,5 @@
 package io.goxjanskloon.v3d;
+import java.util.concurrent.*;
 public class Vector{
     public final double x,y,z;
     public Vector(double x, double y, double z){
@@ -60,7 +61,7 @@ public class Vector{
         return mul(cos).add(axis.mul(1.0-cos).mul(dot(axis))).add(axis.cross(this).mul(Math.sin(angle)));
     }
     public static Vector random(){
-        return new Vector(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5);
+        return new Vector(ThreadLocalRandom.current().nextDouble(-1.0,1.0),ThreadLocalRandom.current().nextDouble(-1.0,1.0),ThreadLocalRandom.current().nextDouble(-1.0,1.0));
     }
     public static Vector randomUnit(){
         while(true){
@@ -70,10 +71,15 @@ public class Vector{
                 return v.div(Math.sqrt(l));
         }
     }
-    public static Vector randomUnitOnHemisphere(Vector normal){
-        Vector v=randomUnit();
-        if(v.dot(normal)>0.0)
-            return v;
-        return v.neg();
+    public static Vector randomUnitOnHemisphere(Vector normal,double roughness){
+        while(true){
+            Vector u=normal.cross(randomUnit());
+            if(u.normSq()>1e-144){
+                Vector v=normal.cross(u);
+                double uAngle=ThreadLocalRandom.current().nextDouble(-0.5,0.5)*roughness*Math.PI;
+                double vAngle=ThreadLocalRandom.current().nextDouble(-0.5,0.5)*roughness*Math.PI;
+                return normal.rotate(u,uAngle).rotate(v,vAngle);
+            }
+        }
     }
 }
