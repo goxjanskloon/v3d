@@ -13,7 +13,7 @@ public class Camera{
     private Vector upDir,rightDir;
     private double upAngle;
     private int width,height,halfWidth,halfHeight,dWidth;
-    public int maxDepth,samplesPerPixel,threadNumber;
+    public int maxDepth,samplesPerPixel;
     public Color bgColor;
     private final ExecutorService threadPool;
     public double getUpAngle(){
@@ -32,27 +32,30 @@ public class Camera{
     }
     public void setWidth(int width){
         halfWidth=(this.width=width)>>1;
-        dWidth=width/threadNumber;
     }
     public void setHeight(int height){
         halfHeight=(this.height=height)>>1;
     }
-    public Camera(Hittable world,Ray ray,double upAngle,int width,int height,int maxDepth,int samplesPerPixel,Color bgColor,int threadNumber){
+    public Camera(Hittable world,Ray ray,double upAngle,int width,int height,int maxDepth,int samplesPerPixel,Color bgColor,int dWidth){
         this.world=world;
         this.ray=ray;
         setUpAngle(upAngle);
-        this.threadNumber=threadNumber;
         setWidth(width);
         setHeight(height);
         this.maxDepth=maxDepth;
         this.samplesPerPixel=samplesPerPixel;
         this.bgColor=bgColor;
+        this.dWidth=dWidth;
+        final int threadNumber=width/dWidth+5;
         threadPool=new ThreadPoolExecutor(threadNumber,threadNumber,Long.MAX_VALUE,TimeUnit.DAYS,new ArrayBlockingQueue<>(threadNumber));
     }
     public Color render(Ray ray,int depth){
         if(depth>maxDepth) return bgColor;
         Hittable.HitRecord record=world.hit(ray,HIT_RANGE);
-        if(record==null) return bgColor;
+        if(record==null){
+            if(depth==1) return Color.BLACK;
+            return bgColor;
+        }
         Vector fuzzedNormal=Vector.randomUnitOnHemisphere(record.normal,record.roughness);
         Vector reflectDir=ray.dir.sub(fuzzedNormal.mul(ray.dir.dot(fuzzedNormal)*2.0)).unit();
         Color reflectColor=render(new Ray(record.point,reflectDir),depth+1).scale(ray.dir.neg().dot(record.normal));
@@ -60,21 +63,25 @@ public class Camera{
     }
     public Color render(int x,int y){
         Color s=Color.BLACK;
-        for(int i=0;i<samplesPerPixel;++i)
-            s=s.mix(render(new Ray(ray.orig,(ray.dir.add(upDir.mul((halfHeight-y+ThreadLocalRandom.current().nextDouble(-0.5,0.5)))).add(rightDir.mul(x-halfWidth+ThreadLocalRandom.current().nextDouble(-0.5,0.5)))).unit()),1));
+        for(int i=0;i<samplesPerPixel;++i){
+            Color sample=render(new Ray(ray.orig,(ray.dir.add(upDir.mul((halfHeight-y+ThreadLocalRandom.current().nextDouble(-0.5,0.5)))).add(rightDir.mul(x-halfWidth+ThreadLocalRandom.current().nextDouble(-0.5,0.5)))).unit()),1);
+            if(sample.isValid())
+                s=s.mix(sample);
+        }
         return s.scale(1.0/samplesPerPixel);
     }
     private class renderRunnable implements Runnable{
         private final int l,r;
         private final Rgb[][] p;
         public renderRunnable(int i,Rgb[][] pixels){
-            r=Math.min((l=i*dWidth)+dWidth,width);
+            r=Math.min((l=i)+dWidth,width);
             p=pixels;
         }
         @Override public void run(){
             for(int i=0;i<height;++i)
                 for(int j=l;j<r;++j)
                     p[i][j]=render(j,i).toRgb();
+            logger.log(Level.INFO,"Thread "+l/dWidth+" finished.");
         }
     }
     public Image render(){
@@ -84,7 +91,8 @@ public class Camera{
             logger.log(Level.INFO,"Thread "+i/dWidth+" submitted.");
         }
         try{
-            if(!threadPool.awaitTermination(Integer.MAX_VALUE,TimeUnit.DAYS))
+            threadPool.shutdown();
+            if(threadPool.awaitTermination(Integer.MAX_VALUE,TimeUnit.DAYS))
                 return image;
         }catch(InterruptedException e){
             logger.log(Level.ERROR,e);

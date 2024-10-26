@@ -1,5 +1,4 @@
 package io.goxjanskloon.v3d;
-import java.util.*;
 public class Aabb{
     public static final Aabb empty=new Aabb(Interval.empty,Interval.empty,Interval.empty);
     public final Interval x,y,z;

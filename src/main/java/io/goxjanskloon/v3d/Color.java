@@ -26,4 +26,7 @@ public class Color{
         c=c.scale(Rgb.MAX);
         return new Rgb((int)c.red,(int)c.green,(int)c.blue);
     }
+    public boolean isValid(){
+        return Double.isFinite(red)&&Double.isFinite(green)&&Double.isFinite(blue);
+    }
 }
