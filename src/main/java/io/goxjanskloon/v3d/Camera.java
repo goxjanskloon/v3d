@@ -56,10 +56,9 @@ public class Camera{
             if(depth==1) return Color.BLACK;
             return bgColor;
         }
-        Vector fuzzedNormal=Vector.randomUnitOnHemisphere(record.normal,record.roughness);
-        Vector reflectDir=ray.dir.sub(fuzzedNormal.mul(ray.dir.dot(fuzzedNormal)*2.0)).unit();
+        Vector reflectDir=ray.dir.sub(record.normal.mul(ray.dir.dot(record.normal)*2.0)).unit();
         Color reflectColor=render(new Ray(record.point,reflectDir),depth+1).scale(ray.dir.neg().dot(record.normal));
-        return reflectColor.scale(record.color).mix(record.color.scale(record.brightness));
+        return reflectColor.scale(record.color).mix(record.color);
     }
     public Color render(int x,int y){
         Color s=Color.BLACK;
