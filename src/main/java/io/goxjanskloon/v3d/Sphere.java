@@ -22,7 +22,7 @@ public class Sphere implements Hittable{
             final Vector normal=point.sub(center).unit();
             final double u=(Math.atan2(-normal.x,normal.z)+Math.PI)/(Math.PI*2.0);
             final double v=Math.acos(-normal.y)/Math.PI;
-            return new HitRecord(point,normal,material.getColor(u,v),t,material);
+            return new HitRecord(point,material.getNormal(normal),material.getColor(u,v),t,material.brightness);
         }else
             return null;
     }

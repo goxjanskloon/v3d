@@ -22,7 +22,7 @@ public class BvhTree implements Hittable{
             objects.sort((a,b)->a.getAabb().compareTo(b.getAabb(),d));
             final int mid=objects.size()>>1;
             left=new BvhTree(objects.subList(0,mid));
-            right=new BvhTree(objects.subList(mid+1,objects.size()-1));
+            right=new BvhTree(objects.subList(mid,objects.size()));
         }
     }
     @Override public Aabb getAabb(){

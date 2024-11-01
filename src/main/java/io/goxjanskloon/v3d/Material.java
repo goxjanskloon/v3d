@@ -8,9 +8,9 @@ class Material{
         this.texture=texture;
     }
     public Color getColor(double u,double v){
-        return texture.getColor(u,v).scale(brightness);
+        return texture.getColor(u,v);
     }
     public Vector getNormal(Vector normal){
-        return Vector.randomUnitOnHemisphere(normal,roughness);
+        return roughness==0.0?normal:Vector.randomUnitOnHemisphere(normal,roughness);
     }
 }

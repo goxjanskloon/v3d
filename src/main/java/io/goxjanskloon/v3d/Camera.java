@@ -58,7 +58,7 @@ public class Camera{
         }
         Vector reflectDir=ray.dir.sub(record.normal.mul(ray.dir.dot(record.normal)*2.0)).unit();
         Color reflectColor=render(new Ray(record.point,reflectDir),depth+1).scale(ray.dir.neg().dot(record.normal));
-        return reflectColor.scale(record.color).mix(record.color);
+        return reflectColor.scale(record.color).mix(record.color.scale(record.brightness));
     }
     public Color render(int x,int y){
         Color s=Color.BLACK;
@@ -91,10 +91,12 @@ public class Camera{
         }
         try{
             threadPool.shutdown();
-            if(threadPool.awaitTermination(Integer.MAX_VALUE,TimeUnit.DAYS))
+            if(threadPool.awaitTermination(Integer.MAX_VALUE,TimeUnit.DAYS)){
+                logger.log(Level.INFO,"Rendering finished.");
                 return image;
+            }
         }catch(InterruptedException e){
-            logger.log(Level.ERROR,e);
+            logger.log(Level.ERROR,"Rendering interrupted.",e);
         }
         return null;
     }
