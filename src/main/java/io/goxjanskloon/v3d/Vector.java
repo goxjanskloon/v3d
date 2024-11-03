@@ -71,15 +71,4 @@ public class Vector{
                 return v.div(Math.sqrt(l));
         }
     }
-    public static Vector randomUnitOnHemisphere(Vector normal,double roughness){
-        while(true){
-            Vector u=normal.cross(randomUnit());
-            if(u.normSq()>1e-144){
-                Vector v=normal.cross(u);
-                double uAngle=ThreadLocalRandom.current().nextDouble(-0.5,0.5)*roughness*Math.PI;
-                double vAngle=ThreadLocalRandom.current().nextDouble(-0.5,0.5)*roughness*Math.PI;
-                return normal.rotate(u,uAngle).rotate(v,vAngle);
-            }
-        }
-    }
 }

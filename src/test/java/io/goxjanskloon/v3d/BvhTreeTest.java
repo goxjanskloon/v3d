@@ -1,5 +1,7 @@
 package io.goxjanskloon.v3d;
 import org.junit.jupiter.api.*;
+import io.goxjanskloon.graphics.*;
+import io.goxjanskloon.utils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 public class BvhTreeTest{
@@ -16,10 +18,10 @@ public class BvhTreeTest{
         bvhTree=new BvhTree(hittables);
     }
     @Test public void hit(){
-        assertTrue(hittables.getFirst().hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(0.0,1.5,0.0)),Interval.universe)!=null);
-        assertTrue(bvhTree.hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(0.0,1.5,0.0)),Interval.universe)!=null);
-        assertTrue(bvhTree.hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(0.0,-1.5,0.0)),Interval.universe)!=null);
-        assertTrue(bvhTree.hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(1.5,0.0,0.0)),Interval.universe)!=null);
-        assertTrue(bvhTree.hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(-1.5,0.0,0.0)),Interval.universe)!=null);
+        assertTrue(hittables.getFirst().hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(0.0,1.5,0.0)),Interval.UNIVERSE)!=null);
+        assertTrue(bvhTree.hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(0.0,1.5,0.0)),Interval.UNIVERSE)!=null);
+        assertTrue(bvhTree.hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(0.0,-1.5,0.0)),Interval.UNIVERSE)!=null);
+        assertTrue(bvhTree.hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(1.5,0.0,0.0)),Interval.UNIVERSE)!=null);
+        assertTrue(bvhTree.hit(new Ray(new Vector(0.0,0.0,-1.0),new Vector(-1.5,0.0,0.0)),Interval.UNIVERSE)!=null);
     }
 }

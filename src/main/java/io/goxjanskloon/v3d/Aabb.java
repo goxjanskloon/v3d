@@ -1,6 +1,7 @@
 package io.goxjanskloon.v3d;
+import io.goxjanskloon.utils.*;
 public class Aabb{
-    public static final Aabb empty=new Aabb(Interval.empty,Interval.empty,Interval.empty);
+    public static final Aabb empty=new Aabb(Interval.EMPTY,Interval.EMPTY,Interval.EMPTY);
     public final Interval x,y,z;
     public Aabb(Interval x,Interval y,Interval z){
         this.x=x;

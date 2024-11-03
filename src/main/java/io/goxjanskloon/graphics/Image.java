@@ -1,4 +1,4 @@
-package io.goxjanskloon.v3d;
+package io.goxjanskloon.graphics;
 import java.io.*;
 import org.apache.log4j.*;
 public class Image{

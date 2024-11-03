@@ -1,5 +1,6 @@
 package io.goxjanskloon.v3d;
 import org.junit.jupiter.api.*;
+import io.goxjanskloon.graphics.*;
 import java.io.*;
 public class ImageTest{
     @Test public void output()throws IOException{

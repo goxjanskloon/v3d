@@ -1,6 +1,10 @@
 package io.goxjanskloon.v3d;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.log4j.*;
+import io.goxjanskloon.graphics.*;
+import io.goxjanskloon.utils.*;
 public class Camera{
     public static final Interval HIT_RANGE=new Interval(1e-5,Double.POSITIVE_INFINITY);
     public static final Vector Y_POSITIVE=new Vector(0.0,1.0,0.0);
@@ -63,7 +67,7 @@ public class Camera{
     public Color render(int x,int y){
         Color s=Color.BLACK;
         for(int i=0;i<samplesPerPixel;++i){
-            Color sample=render(new Ray(ray.orig,(ray.dir.add(upDir.mul((halfHeight-y+ThreadLocalRandom.current().nextDouble(-0.5,0.5)))).add(rightDir.mul(x-halfWidth+ThreadLocalRandom.current().nextDouble(-0.5,0.5)))).unit()),1);
+            Color sample=render(new Ray(ray.orig,(ray.dir.add(upDir.mul((halfHeight-y+Interval.UNIT_RANGE.random()))).add(rightDir.mul(x-halfWidth+Interval.UNIT_RANGE.random()))).unit()),1);
             if(sample.isValid())
                 s=s.mix(sample);
         }
@@ -72,21 +76,25 @@ public class Camera{
     private class renderRunnable implements Runnable{
         private final int l,r;
         private final Rgb[][] p;
-        public renderRunnable(int i,Rgb[][] pixels){
+        private final AtomicInteger total;
+        public renderRunnable(int i,Rgb[][] pixels,AtomicInteger total){
             r=Math.min((l=i)+dWidth,width);
             p=pixels;
+            this.total=total;
         }
         @Override public void run(){
             for(int i=0;i<height;++i)
                 for(int j=l;j<r;++j)
                     p[i][j]=render(j,i).toRgb();
-            logger.log(Level.INFO,"Thread "+l/dWidth+" finished.");
+            logger.log(Level.INFO,"Thread "+l/dWidth+" finished,"+total.decrementAndGet()+" thread(s) left.");
         }
     }
     public Image render(){
         Image image=new Image(new Rgb[height][width]);
+        AtomicInteger total=new AtomicInteger();
         for(int i=0;i<width;i+=dWidth){
-            threadPool.execute(new renderRunnable(i,image.pixels));
+            total.incrementAndGet();
+            threadPool.execute(new renderRunnable(i,image.pixels,total));
             logger.log(Level.INFO,"Thread "+i/dWidth+" submitted.");
         }
         try{

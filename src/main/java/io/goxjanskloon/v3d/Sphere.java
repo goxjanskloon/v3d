@@ -1,4 +1,5 @@
 package io.goxjanskloon.v3d;
+import io.goxjanskloon.utils.*;
 public class Sphere implements Hittable{
     public final Vector center;
     public final double radius;

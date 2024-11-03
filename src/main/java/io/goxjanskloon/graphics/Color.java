@@ -1,4 +1,5 @@
-package io.goxjanskloon.v3d;
+package io.goxjanskloon.graphics;
+import io.goxjanskloon.utils.Interval;
 public class Color{
     public static final Interval RANGE=new Interval(0.0,1.0);
     public static final Color WHITE=new Color(1.0,1.0,1.0),BLACK=new Color(0.0,0.0,0.0),RED=new Color(1.0,0.0,0.0),GREEN=new Color(0.0,1.0,0.0),BLUE=new Color(0.0,0.0,1.0),YELLOW=new Color(1.0,1.0,0.0),CYAN=new Color(0.0,1.0,1.0);

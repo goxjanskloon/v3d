@@ -1,4 +1,6 @@
 package io.goxjanskloon.v3d;
+import io.goxjanskloon.graphics.*;
+import io.goxjanskloon.utils.*;
 public interface Hittable{
     final class HitRecord{
         public final Vector point,normal;

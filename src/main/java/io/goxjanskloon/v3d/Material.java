@@ -1,4 +1,5 @@
 package io.goxjanskloon.v3d;
+import io.goxjanskloon.graphics.*;
 class Material{
     public final double roughness,brightness;
     public final Texture texture;
@@ -11,6 +12,6 @@ class Material{
         return texture.getColor(u,v);
     }
     public Vector getNormal(Vector normal){
-        return roughness==0.0?normal:Vector.randomUnitOnHemisphere(normal,roughness);
+        return roughness==0.0?normal:Vector.randomUnit().mul(roughness).add(normal).unit();
     }
 }

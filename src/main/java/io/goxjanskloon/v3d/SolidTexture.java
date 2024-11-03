@@ -1,4 +1,5 @@
 package io.goxjanskloon.v3d;
+import io.goxjanskloon.graphics.*;
 public class SolidTexture implements Texture{
     public final Color color;
     public SolidTexture(Color color){

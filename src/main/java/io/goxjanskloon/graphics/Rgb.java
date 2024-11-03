@@ -1,4 +1,4 @@
-package io.goxjanskloon.v3d;
+package io.goxjanskloon.graphics;
 public class Rgb{
     public final static int MAX=256;
     public final int red,green,blue;
