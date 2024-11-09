@@ -1,7 +1,6 @@
 package io.goxjanskloon.v3d;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.concurrent.atomic.*;
 import org.apache.log4j.*;
 import io.goxjanskloon.graphics.*;
 import io.goxjanskloon.utils.*;
@@ -86,7 +85,8 @@ public class Camera{
             for(int i=0;i<height;++i)
                 for(int j=l;j<r;++j)
                     p[i][j]=render(j,i).toRgb();
-            logger.log(Level.INFO,"Thread "+l/dWidth+" finished,"+total.decrementAndGet()+" thread(s) left.");
+            int remain=total.decrementAndGet();
+            logger.log(Level.INFO,"Thread "+l/dWidth+" finished,"+remain+" thread"+(remain>1?"s":"")+" left.");
         }
     }
     public Image render(){
