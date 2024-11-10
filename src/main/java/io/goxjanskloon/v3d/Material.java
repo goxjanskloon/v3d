@@ -1,6 +1,6 @@
 package io.goxjanskloon.v3d;
 import io.goxjanskloon.graphics.*;
-class Material{
+public class Material{
     public final double roughness,brightness;
     public final Texture texture;
     public Material(double roughness,double brightness,Texture texture){

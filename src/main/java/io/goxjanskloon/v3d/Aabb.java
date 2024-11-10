@@ -1,6 +1,7 @@
 package io.goxjanskloon.v3d;
+import java.util.*;
 import io.goxjanskloon.utils.*;
-public class Aabb{
+public class Aabb implements Iterable<Interval>{
     public static final Aabb empty=new Aabb(Interval.EMPTY,Interval.EMPTY,Interval.EMPTY);
     public final Interval x,y,z;
     public Aabb(Interval x,Interval y,Interval z){
@@ -39,5 +40,30 @@ public class Aabb{
     }
     public int compareTo(Aabb other,Dimension d){
         return Double.compare(get(d).min,other.get(d).min);
+    }
+    @Override public Iterator<Interval> iterator(){
+        return new Iterator<Interval>() {
+            private Dimension d=Dimension.X;
+            @Override public boolean hasNext(){
+                return d==Dimension.Z;
+            }
+            @Override public Interval next(){
+                if(!hasNext())
+                    throw new IllegalStateException("No next");
+                Interval result=get(d);
+                d=switch(d){
+                    case X->
+                            Dimension.Y;
+                    case Y->
+                            Dimension.Z;
+                    default->
+                            throw new IllegalStateException("No next");
+                };
+                return result;
+            }
+        };
+    }
+    public Aabb move(Vector motion){
+        return new Aabb(x.move(motion.x),y.move(motion.y),z.move(motion.z));
     }
 }

@@ -27,4 +27,7 @@ public class Interval{
     public double random(){
         return Randoms.nextDouble(this);
     }
+    public Interval move(double x){
+        return new Interval(min+x,max+x);
+    }
 }
