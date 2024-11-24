@@ -71,4 +71,10 @@ public class Vector{
                 return v.div(Math.sqrt(l));
         }
     }
+    public static Vector randomOnHemisphere(Vector normal){
+        Vector v=randomUnit();
+        if(normal.dot(v)>0.0)
+            return v;
+        return v.neg();
+    }
 }

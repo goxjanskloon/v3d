@@ -11,7 +11,4 @@ public class Material{
     public Color getColor(double u,double v){
         return texture.getColor(u,v);
     }
-    public Vector getNormal(Vector normal){
-        return roughness==0.0?normal:Vector.randomUnit().mul(roughness).add(normal).unit();
-    }
 }
