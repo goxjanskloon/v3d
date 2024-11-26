@@ -17,9 +17,12 @@ public class Color{
     }
     public Color scale(double scale){
         return new Color(red*scale,green*scale,blue*scale);
+    }public Color gamma(){
+        return new Color(red<0.0?0.0:Math.sqrt(red),green<0.0?0.0:Math.sqrt(green),blue<0.0?0.0:Math.sqrt(blue));
     }
     public Rgb toRgb(){
-        Color c=new Color(RANGE.clamp(red),RANGE.clamp(green),RANGE.clamp(blue));
+        Color c=gamma();
+        c=new Color(RANGE.clamp(c.red),RANGE.clamp(c.green),RANGE.clamp(c.blue));
         c=c.scale(Rgb.MAX);
         return new Rgb((int)c.red,(int)c.green,(int)c.blue);
     }
