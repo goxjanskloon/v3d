@@ -1,12 +1,16 @@
 package io.goxjanskloon.v3d;
+import io.goxjanskloon.graphics.*;
 import io.goxjanskloon.utils.*;
 public class Sphere implements Hittable{
     public final Vector center;
-    public final double radius;
+    public final double radius,brightness;
     public final Material material;
-    public Sphere(Vector center,double radius,Material material){
+    public final Color color;
+    public Sphere(Vector center,double radius,Color color,double brightness,Material material){
         this.center=center;
         this.radius=radius;
+        this.color=color;
+        this.brightness=brightness;
         this.material=material;
     }
     @Override public HitRecord hit(Ray ray,Interval interval){
@@ -20,10 +24,7 @@ public class Sphere implements Hittable{
             t+=sd*2;
         if(interval.contains(t)){
             final Vector point=ray.at(t);
-            final Vector normal=point.sub(center).unit();
-            final double u=(Math.atan2(-normal.x,normal.z)+Math.PI)/(Math.PI*2.0);
-            final double v=Math.acos(-normal.y)/Math.PI;
-            return new HitRecord(point,normal,material.getColor(u,v),t,material);
+            return new HitRecord(point,point.sub(center).unit(),color,brightness,t,material);
         }else
             return null;
     }

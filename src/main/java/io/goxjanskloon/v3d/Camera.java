@@ -6,7 +6,7 @@ import io.goxjanskloon.graphics.*;
 import io.goxjanskloon.utils.*;
 public class Camera{
     public static final Interval HIT_RANGE=new Interval(1e-5,Double.POSITIVE_INFINITY);
-    public static final Vector Y_POSITIVE=new Vector(0.0,1.0,0.0);
+    public static final Vector Y_POSITIVE=new Vector(0,1,0);
     private static final Logger logger=Logger.getLogger(Camera.class);
     static{
         PropertyConfigurator.configure(Camera.class.getClassLoader().getResourceAsStream("log4j.properties"));
@@ -17,7 +17,7 @@ public class Camera{
     private double upAngle;
     private int width,height,halfWidth,halfHeight,dWidth;
     public int maxDepth,samplesPerPixel;
-    public Color bgColor;
+    public Color backgroundLight;
     private final ExecutorService threadPool;
     public double getUpAngle(){
         return upAngle;
@@ -25,7 +25,7 @@ public class Camera{
     public void setUpAngle(double upAngle){
         this.upAngle=upAngle;
         upDir=ray.dir.cross(Y_POSITIVE).unit().rotate(ray.dir.unit(),upAngle);
-        rightDir=upDir.rotate(ray.dir.unit(),-Math.PI/2.0);
+        rightDir=upDir.rotate(ray.dir.unit(),-Math.PI/2);
     }
     public int getWidth(){
         return width;
@@ -39,7 +39,7 @@ public class Camera{
     public void setHeight(int height){
         halfHeight=(this.height=height)>>1;
     }
-    public Camera(Hittable world,Ray ray,double upAngle,int width,int height,int maxDepth,int samplesPerPixel,Color bgColor,int dWidth){
+    public Camera(Hittable world,Ray ray,double upAngle,int width,int height,int maxDepth,int samplesPerPixel,Color backgroundLight,int dWidth){
         this.world=world;
         this.ray=ray;
         setUpAngle(upAngle);
@@ -47,28 +47,21 @@ public class Camera{
         setHeight(height);
         this.maxDepth=maxDepth;
         this.samplesPerPixel=samplesPerPixel;
-        this.bgColor=bgColor;
+        this.backgroundLight=backgroundLight;
         this.dWidth=dWidth;
         final int threadNumber=width/dWidth+5;
         threadPool=new ThreadPoolExecutor(threadNumber,threadNumber,Long.MAX_VALUE,TimeUnit.DAYS,new ArrayBlockingQueue<>(threadNumber));
     }
     public Color render(Ray ray,int depth){
-        if(depth>maxDepth) return bgColor;
         Hittable.HitRecord record=world.hit(ray,HIT_RANGE);
         if(record==null){
             if(depth==1) return Color.BLACK;
-            return bgColor;
+            return backgroundLight;
         }
-        if(record.material.roughness==0.0){
-            Vector reflectDir=ray.dir.sub(record.normal.mul(ray.dir.dot(record.normal)*2.0)).unit();
-            Color reflectColor=render(new Ray(record.point,reflectDir),depth+1);
-            return reflectColor.scale(record.color).mix(record.color.scale(record.material.brightness));
-        }
-        Vector reflectDir=ray.dir.sub(record.normal.mul(ray.dir.dot(record.normal)*2.0)).unit();
-        Vector randomDir=Vector.randomOnHemisphere(record.normal);
-        Vector fuzzedReflectDir=randomDir;
-        Color reflectColor=render(new Ray(record.point,fuzzedReflectDir),depth+1).scale(record.material.roughness/(reflectDir.dot(fuzzedReflectDir)+record.material.roughness*Math.PI*2.0));
-        return reflectColor.scale(record.color).mix(record.color.scale(record.material.brightness));
+        if(depth==maxDepth) return record.color.scale(record.brightness);
+        Vector reflectDir=ray.dir.sub(record.normal.mul(ray.dir.dot(record.normal)*2)).unit();
+        Vector fuzzedReflectDir=record.material.generate(record.normal,reflectDir);
+        return render(new Ray(record.point,fuzzedReflectDir),depth+1).scale(1/record.material.getPossibility(reflectDir,fuzzedReflectDir)).scale(record.color).mix(record.color.scale(record.brightness));
     }
     public Color render(int x,int y){
         Color s=Color.BLACK;

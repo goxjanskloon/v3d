@@ -5,12 +5,13 @@ public interface Hittable{
     final class HitRecord{
         public final Vector point,normal;
         public final Color color;
-        public final double dist;
+        public final double dist,brightness;
         public final Material material;
-        public HitRecord(Vector point,Vector normal,Color color,double dist,Material material){
+        public HitRecord(Vector point,Vector normal,Color color,double brightness,double dist,Material material){
             this.point=point;
             this.normal=normal;
             this.color=color;
+            this.brightness=brightness;
             this.dist=dist;
             this.material=material;
         }

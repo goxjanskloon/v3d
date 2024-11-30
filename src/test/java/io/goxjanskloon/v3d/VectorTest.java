@@ -3,10 +3,10 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 class VectorTest{
     @Test void get(){
-        Vector v=new Vector(1.0,2.0,3.0);
-        assertEquals(v.get(Dimension.X),1.0);
-        assertEquals(v.get(Dimension.Y),2.0);
-        assertEquals(v.get(Dimension.Z),3.0);
+        Vector v=new Vector(1,2,3);
+        assertEquals(1,v.get(Dimension.X));
+        assertEquals(2,v.get(Dimension.Y));
+        assertEquals(3,v.get(Dimension.Z));
     }
     @Test void dot(){
         Vector a=new Vector(1.3,-2.4,0.7),b=new Vector(2.6,-3.6,-6.2);

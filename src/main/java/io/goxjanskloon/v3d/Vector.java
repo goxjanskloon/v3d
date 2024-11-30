@@ -58,10 +58,10 @@ public class Vector{
     }
     public Vector rotate(Vector axis,double angle){
         final double cos=Math.cos(angle);
-        return mul(cos).add(axis.mul(1.0-cos).mul(dot(axis))).add(axis.cross(this).mul(Math.sin(angle)));
+        return mul(cos).add(axis.mul(1-cos).mul(dot(axis))).add(axis.cross(this).mul(Math.sin(angle)));
     }
     public static Vector random(){
-        return new Vector(ThreadLocalRandom.current().nextDouble(-1.0,1.0),ThreadLocalRandom.current().nextDouble(-1.0,1.0),ThreadLocalRandom.current().nextDouble(-1.0,1.0));
+        return new Vector(ThreadLocalRandom.current().nextDouble(-1,1),ThreadLocalRandom.current().nextDouble(-1,1),ThreadLocalRandom.current().nextDouble(-1,1));
     }
     public static Vector randomUnit(){
         while(true){
@@ -73,7 +73,7 @@ public class Vector{
     }
     public static Vector randomOnHemisphere(Vector normal){
         Vector v=randomUnit();
-        if(normal.dot(v)>0.0)
+        if(normal.dot(v)>0)
             return v;
         return v.neg();
     }

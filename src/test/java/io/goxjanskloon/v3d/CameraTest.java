@@ -6,13 +6,13 @@ import java.util.*;
 public class CameraTest{
     @Test public void render()throws IOException{
         ArrayList<Hittable> world=new ArrayList<>();
-        world.add(new Sphere(new Vector(0.0,50.0,0.0),44.0,new Material(0.5,0.0,new SolidTexture(Color.BLUE))));
-        world.add(new Sphere(new Vector(-5.0,0.0,0.0),5.0,new Material(0.0,1.0,new SolidTexture(Color.WHITE))));
-        world.add(new Sphere(new Vector(5.0,0.0,0.0),5.0,new Material(0.5,0.0,new SolidTexture(Color.RED))));
-        world.add(new Sphere(new Vector(0.0,-50.0,0.0),44.0,new Material(0.5,0.0,new SolidTexture(Color.YELLOW))));
+        world.add(new Sphere(new Vector(0,50,0),44,Color.BLUE,0,new Lambertian()));
+        world.add(new Sphere(new Vector(-5,0,0),5,Color.WHITE,1,new Lambertian()));
+        world.add(new Sphere(new Vector(5,0,0),5,Color.RED,0,new Metal(0.5)));
+        world.add(new Sphere(new Vector(0,-50,0),44,Color.YELLOW,0,new Lambertian()));
         BvhTree bvhTree=new BvhTree(world);
-        Ray ray=new Ray(new Vector(0.0,0.0,-20.0),new Vector(0.0,0.0,300.0));
-        Camera camera=new Camera(bvhTree,ray,-Math.PI/2,600,360,8,1000,Color.BLACK,12);
+        Ray ray=new Ray(new Vector(0,0,-20),new Vector(0,0,300));
+        Camera camera=new Camera(bvhTree,ray,-Math.PI/2,600,360,8,1000,Color.BLACK,30);
         Image image=camera.render();
         FileWriter file=new FileWriter("CameraTest.render().ppm");
         image.output(file);
