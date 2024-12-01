@@ -17,7 +17,11 @@ public class Color{
     }
     public Color scale(double scale){
         return new Color(red*scale,green*scale,blue*scale);
-    }public Color gamma(){
+    }
+    public Color div(double scale){
+        return new Color(red/scale,green/scale,blue/scale);
+    }
+    public Color gamma(){
         return new Color(red<0?0:Math.sqrt(red),green<0?0:Math.sqrt(green),blue<0?0:Math.sqrt(blue));
     }
     public Rgb toRgb(){

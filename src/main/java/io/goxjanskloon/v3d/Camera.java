@@ -61,7 +61,7 @@ public class Camera{
         if(depth==maxDepth) return record.color.scale(record.brightness);
         Vector reflectDir=ray.dir.sub(record.normal.mul(ray.dir.dot(record.normal)*2)).unit();
         Vector fuzzedReflectDir=record.material.generate(record.normal,reflectDir);
-        return render(new Ray(record.point,fuzzedReflectDir),depth+1).scale(1/record.material.getPossibility(reflectDir,fuzzedReflectDir)).scale(record.color).mix(record.color.scale(record.brightness));
+        return render(new Ray(record.point,fuzzedReflectDir),depth+1).div(record.material.getPossibility(reflectDir,fuzzedReflectDir)).scale(record.color).mix(record.color.scale(record.brightness));
     }
     public Color render(int x,int y){
         Color s=Color.BLACK;
@@ -70,7 +70,7 @@ public class Camera{
             if(sample.isValid())
                 s=s.mix(sample);
         }
-        return s.scale(1.0/samplesPerPixel);
+        return s.div(samplesPerPixel);
     }
     private class renderRunnable implements Runnable{
         private final int l,r;
